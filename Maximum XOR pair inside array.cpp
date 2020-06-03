@@ -79,5 +79,6 @@ int main(){
         cin>>arr[i];
     }
     cout<<t.max_xor(arr , n)<<endl;
+    //this will give us correct output
     return 0;
 }
