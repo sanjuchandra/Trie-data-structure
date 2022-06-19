@@ -1,0 +1,105 @@
+class node {
+public:
+    char data;
+    unordered_map<char , node *> children;
+    bool terminal;
+    set<string> allWords;
+    node(char ch, string s) {
+        data = ch;
+        terminal = false;
+        allWords.insert(s);
+    }
+};
+
+
+class trie {
+    node *root;
+    int cnt;
+public:
+    trie() {
+        root = new node('\0', "");
+        cnt = 0;
+    }
+    void insert(string w) {
+        node *temp = root;
+        for (int i = 0 ; i < w.size() ; i++) {
+            char ch = w[i];
+            if (temp->children.count(ch)) {
+                temp = temp->children[ch];
+                temp->allWords.insert(w);
+            }
+            else {
+                node *n = new node(ch, w);
+                temp->children[ch] = n;
+                temp = n;
+            }
+        }
+        temp->terminal = true;
+    }
+
+    bool search(string w) {
+        node *temp = root;
+        for (int i = 0 ; i < w.size() ; i++) {
+            char ch = w[i];
+            if (temp->children.count(ch) == 0) {
+                //pahle hi pakada gya bc
+                return false;
+            }
+            else {
+                temp = temp->children[ch];
+            }
+        }
+        return temp->terminal; //aakhrui mein check kro terminal hai ki nahi
+    }
+
+
+    vector<set<string>> solve(string w) {
+        node *temp = root;
+        vector<set<string>> ans;
+        for (int i = 0 ; i < w.size() ; i++) {
+            char ch = w[i];
+            if (temp->children.count(ch) == 0) {
+                //pahle hi pakada gya bc
+                for(int j=i;j<w.size();j++){
+                    ans.push_back({});
+                }
+                return ans;
+            }
+            else {
+                temp = temp->children[ch];
+                ans.push_back(temp->allWords);
+            }
+        }
+        return ans; //aakhrui mein check kro terminal hai ki nahi
+    }
+};
+
+
+
+class Solution {
+public:
+    vector<vector<string>> suggestedProducts(vector<string>& pd, string sw) {
+        trie t;
+        for (auto x : pd) {
+            t.insert(x);
+        }
+
+        vector<set<string>> ans1 = t.solve(sw);
+        vector<vector<string>> ans2;
+        for (auto x : ans1) {
+            int i = 0;
+            auto it = x.begin();
+            vector<string> ans3;
+            while (i < 3 and it != x.end()) {
+                ans3.push_back(*it);
+                it++;
+                i++;
+            }
+            ans2.push_back(ans3);
+        }
+        return ans2;
+
+    }
+};
+
+
